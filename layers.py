@@ -5,6 +5,7 @@ from lasagne.layers import (
 from lasagne.nonlinearities import linear, softmax
 from lasagne.init import HeUniform
 
+
 def BN_ReLU_Conv(inputs, n_filters, filter_size=3, dropout_p=0.2):
     """
     Apply successivly BatchNormalization, ReLu nonlinearity, Convolution and Dropout (if dropout_p > 0) on the inputs
