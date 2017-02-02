@@ -5,7 +5,7 @@ import time
 import theano
 from lasagne.layers import get_output
 
-from data_loader import load_data
+# from data_loader import load_data
 from metrics import numpy_metrics, theano_metrics
 
 
@@ -24,14 +24,14 @@ def test(config_path, weight_path):
     print('-' * 75)
     # Load config file
 
-    # Load data
-    print('Loading data')
-    batch_size = 10
-    _, _, iterator = load_data(cf.dataset, batch_size=batch_size)
+    # # Load data
+    # print('Loading data')
+    # batch_size = 10
+    # _, _, iterator = load_data(cf.dataset, batch_size=batch_size)
 
-    n_classes = iterator.get_n_classes()
-    _, n_rows, n_cols = iterator.data_shape
-    void_labels = iterator.get_void_labels()
+    # n_classes = iterator.get_n_classes()
+    # _, n_rows, n_cols = iterator.data_shape
+    # void_labels = iterator.get_void_labels()
 
     ###################
     #  Compile model  #
@@ -40,6 +40,9 @@ def test(config_path, weight_path):
     # Print summary
     net = cf.net
     net.restore(weight_path)
+
+    import pdb
+    pdb.set_trace()
 
     # Compile test functions
     prediction = get_output(net.output_layer, deterministic=True, batch_norm_use_averages=False)
@@ -76,8 +79,8 @@ def test(config_path, weight_path):
 
     for label, jacc in zip(labels, I_tot / U_tot):
         print('{} :\t{:.4f}'.format(label, jacc))
-    print 'Mean Jaccard', np.mean(I_tot / U_tot)
-    print 'Global accuracy', acc_tot / n_imgs
+    print('Mean Jaccard', np.mean(I_tot / U_tot))
+    print('Global accuracy', acc_tot / n_imgs)
 
     # To visualize an image : np.reshape(np.argmax(g(X), axis = 1), (360, 480))
     # with g = theano.function([net.input_var], prediction)

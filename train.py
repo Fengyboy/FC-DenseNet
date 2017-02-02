@@ -60,7 +60,7 @@ def train(cf):
 
     print('-' * 75)
     print('Loading data')
-    #TODO ; prepare a public version of the data loader
+    # TODO ; prepare a public version of the data loader
     train_iter, val_iter, test_iter = load_data(cf.dataset,
                                                 train_crop_size=cf.train_crop_size,
                                                 batch_size=cf.batch_size,
@@ -77,7 +77,7 @@ def train(cf):
     #   Build model   #
     ###################
 
-    # Build model and display summary    
+    # Build model and display summary
     net = cf.net
     net.summary()
 
@@ -122,7 +122,10 @@ def train(cf):
     ###################
 
     # metric's sauce
-    init_history = lambda: {'loss': [], 'jaccard': [], 'accuracy': []}
+    # init_history = lambda: {'loss': [], 'jaccard': [], 'accuracy': []}
+
+    def init_history(): return {'loss': [], 'jaccard': [], 'accuracy': []}
+
     history = {'train': init_history(), 'val': init_history(), 'test': init_history()}
     patience = 0
     best_jacc_val = 0
