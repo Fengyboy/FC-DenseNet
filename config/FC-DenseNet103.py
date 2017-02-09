@@ -24,7 +24,7 @@ batch_size = 3
 model_path = os.path.join(os.getcwd().split('/config')[0], 'FC-DenseNet.py')
 net = imp.load_source('Net', model_path).Network(
     input_shape=(None, 3, None, None),
-    n_classes=11,
+    n_classes=40,
     n_filters_first_conv=48,
     n_pool=5,
     growth_rate=16,
@@ -37,7 +37,7 @@ if __name__ == '__main__':
     # Display a summary with a given shape for the input image
     net2 = imp.load_source('Net', model_path).Network(
         input_shape=(None, 3, 360, 480),
-        n_classes=11,
+        n_classes=40,
         n_filters_first_conv=48,
         n_pool=5,
         growth_rate=16,
