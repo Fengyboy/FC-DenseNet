@@ -122,12 +122,18 @@ class Network():
         """ Save the weights """
         np.savez(path, *get_all_param_values(self.output_layer))
 
-    def restore(self, path):
+    def restore(self, path, new_model=False):
         """ Load the weights """
 
         with np.load(path) as f:
-            saved_params_values = [f['arr_%d' % i] for i in range(len(f.files))]
-        set_all_param_values(self.output_layer, saved_params_values)
+            if new_model:
+                # If new_model=True, the parameters of the output
+                saved_params_values = [f['arr_%d' % i] for i in range(len(f.files)-2)]
+                set_all_param_values(self.output_layer.input_layer.input_layer.input_layer,
+                                     saved_params_values)
+            else:
+                saved_params_values = [f['arr_%d' % i] for i in range(len(f.files))]
+                set_all_param_values(self.output_layer, saved_params_values)
 
     def summary(self, light=False):
         """ Print a summary of the network architecture """

@@ -19,7 +19,9 @@ optimizer = rmsprop  # Consider adam for training on other dataset, or decrease 
 batch_size = 3
 
 # Architecture
-# pretrained_model= None # path of the weights of a pretrained network
+# path of the weights of a pretrained network
+pretrained_model = os.path.join(os.path.dirname(__file__),
+                                'FC-DenseNet103_weights.npz')
 
 model_path = os.path.join(os.getcwd().split('/config')[0], 'FC-DenseNet.py')
 net = imp.load_source('Net', model_path).Network(

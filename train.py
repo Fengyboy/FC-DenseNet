@@ -9,13 +9,44 @@ import imp
 import lasagne
 import numpy as np
 import theano
-import theano.tensor as T
+# import theano.tensor as T
 from lasagne.regularization import regularize_network_params
 from lasagne.layers import get_output
-from theano.tensor.shared_randomstreams import RandomStreams
+# from theano.tensor.shared_randomstreams import RandomStreams
 from data_loader import load_data
 
 from metrics import theano_metrics, crossentropy
+
+
+# An iterator class for going through the dataset
+class data_iterator:
+    def __init__(self, images, labels, n_classes, batch_size):
+        self.image_arr = images
+        self.label_arr = labels
+        self.n_classes = n_classes
+        self.batch_size = batch_size
+
+    def __iter__(self):
+        return self
+
+    def next(self):  # Python 3: def __next__(self)
+        if self.current > len(self.image_arr):
+            raise StopIteration
+        else:
+            self.current += 1
+            return self.current - 1
+
+    def get_n_classes(self):
+        return self.n_classes
+
+    def get_n_samples(self):
+        return len(self.image_arr)
+
+    def get_n_batches(self):
+        return self.batch_size
+
+    def get_void_labels(self):
+        return {}
 
 
 def batch_loop(iterator, f, epoch, phase, history):
@@ -84,7 +115,7 @@ def train(cf):
     # Restore
     if hasattr(cf, 'pretrained_model'):
         print('Using a pretrained model : {}'.format(cf.pretrained_model))
-        net.restore(cf.pretrained_model)
+        net.restore(cf.pretrained_model, new_model=True)
 
     # Compile functions
     print('Compilation starts at ' + str(datetime.now()).split('.')[0])

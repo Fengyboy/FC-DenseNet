@@ -128,6 +128,8 @@ if __name__ == '__main__':
     config_path = 'config/FC-DenseNet103.py'
     weight_path = 'weights/FC-DenseNet103_weights.npz'
     network = load_model(config_path, weight_path)
+    import ipdb
+    ipdb.set_trace()
 
     # image_mean = np.array((104.00698793, 116.66876762, 122.67891434))
     image_mean = np.array((0., 0., 0.))
