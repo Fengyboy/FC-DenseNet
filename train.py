@@ -6,8 +6,11 @@ import sys
 import time
 from datetime import datetime
 import imp
+import json
 import lasagne
+from lasagne.utils import floatX
 import numpy as np
+from PIL import Image
 import theano
 # import theano.tensor as T
 from lasagne.regularization import regularize_network_params
@@ -16,6 +19,11 @@ from lasagne.layers import get_output
 from data_loader import load_data
 
 from metrics import theano_metrics, crossentropy
+
+
+# Default image size
+IM_H = 360
+IM_W = 480
 
 
 # An iterator class for going through the dataset
@@ -47,6 +55,80 @@ class data_iterator:
 
     def get_void_labels(self):
         return {}
+
+
+def load_nyud_data(data_path):
+    """
+    Load and process images and labels of NYUD dataset.
+
+    Paramters
+    ---------
+    args: argparse.ArgumentParser
+        Parsed arugments from the command line
+    image_mean: array_like (1, 3) dtype=float
+        The mean of training images, derived from ImageNet training
+
+    Returns
+    -------
+    X_train: array_like (N, C, H, W) dtype=float
+        Numpy array of the training images (None, 3, 500, 500)
+    y_train: array_like (N, C, H, W) dtype=uint8
+        Numpy array of the training labels (None, 1, 500, 500)
+    X_test: array_like (N, C, H, W) dtype=float
+        Numpy array of the testing images (None, 3, 500, 500)
+    y_test: array_like (N, C, H, W) dtype=uint8
+        Numpy array of the testing labels (None, 1, 500, 500)
+    """
+    # Load dataset partitioning
+    with open(
+        os.path.join(data_path,
+                     'dataset_partitioning.json'), 'r'
+    ) as partitioning_fd:
+        partitioning = json.load(partitioning_fd)
+
+    train_lst = partitioning['train']
+    val_lst = partitioning['val']
+    test_lst = partitioning['test']
+
+    im_size = (IM_H, IM_W)
+
+    def load_images(image_list):
+        images = []
+        for image_name in image_list:
+            image = Image.open(os.path.join(data_path, image_name))
+            # Resize so smallest dim = im_size, preserving aspect ratio
+            im = image.resize(im_size, resample=Image.LANCZOS)
+            # Central crop to hl_sizexhl_size
+            im_ = np.array(im, dtype=np.float32)
+            # Shuffle axes from 01c to c01
+            im_ = im_.transpose(2, 0, 1)
+            # Convert from RGB to BGR
+            im_ = im_[::-1]
+            images.append(floatX(im_))
+
+        return np.array(images)
+
+    def load_labels(label_list):
+        labels = []
+        for label_name in label_list:
+            label = Image.open(os.path.join(data_path, label_name))
+            # Resize so smallest dim = im_size, preserving aspect ratio
+            lb = label.resize(im_size, resample=Image.LANCZOS)
+            # Central crop to hl_sizexhl_size
+            lb_ = np.array(lb, dtype=np.uint8)
+            lb_ = np.reshape(lb_, (-1, lb_.shape[0], lb_.shape[1]))
+            lb_ = (lb_ != 0).astype(int)
+            labels.append(floatX(lb_))
+
+        return np.array(labels)
+
+    X_train = load_images(X_list)
+    y_train = load_labels(y_list)
+
+    X_test = load_images(XX_list)
+    y_test = load_labels(yy_list)
+
+    return X_train, y_train, X_test, y_test
 
 
 def batch_loop(iterator, f, epoch, phase, history):
