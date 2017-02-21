@@ -58,27 +58,6 @@ class data_iterator:
 
 
 def load_nyud_data(data_path):
-    """
-    Load and process images and labels of NYUD dataset.
-
-    Paramters
-    ---------
-    args: argparse.ArgumentParser
-        Parsed arugments from the command line
-    image_mean: array_like (1, 3) dtype=float
-        The mean of training images, derived from ImageNet training
-
-    Returns
-    -------
-    X_train: array_like (N, C, H, W) dtype=float
-        Numpy array of the training images (None, 3, 500, 500)
-    y_train: array_like (N, C, H, W) dtype=uint8
-        Numpy array of the training labels (None, 1, 500, 500)
-    X_test: array_like (N, C, H, W) dtype=float
-        Numpy array of the testing images (None, 3, 500, 500)
-    y_test: array_like (N, C, H, W) dtype=uint8
-        Numpy array of the testing labels (None, 1, 500, 500)
-    """
     # Load dataset partitioning
     with open(
         os.path.join(data_path,
@@ -122,13 +101,25 @@ def load_nyud_data(data_path):
 
         return np.array(labels)
 
-    X_train = load_images(X_list)
-    y_train = load_labels(y_list)
+    X_train = load_images(train_lst)
+    y_train = load_labels(train_lst)
 
-    X_test = load_images(XX_list)
-    y_test = load_labels(yy_list)
+    X_val = load_images(val_lst)
+    y_val = load_labels(val_lst)
 
-    return X_train, y_train, X_test, y_test
+    X_test = load_images(test_lst)
+    y_test = load_labels(test_lst)
+
+    train_X = data_iterator(X_train)
+    train_Y = data_iterator(y_train)
+
+    val_X = data_iterator(X_val)
+    val_Y = data_iterator(y_val)
+
+    test_X = data_iterator(X_test)
+    test_Y = data_iterator(y_test)
+
+    return train_X, train_Y, val_X, val_Y, test_X, test_Y
 
 
 def batch_loop(iterator, f, epoch, phase, history):
