@@ -110,14 +110,9 @@ def load_nyud_data(data_path):
     X_test = load_images(test_lst)
     y_test = load_labels(test_lst)
 
-    train_X = data_iterator(X_train)
-    train_Y = data_iterator(y_train)
-
-    val_X = data_iterator(X_val)
-    val_Y = data_iterator(y_val)
-
-    test_X = data_iterator(X_test)
-    test_Y = data_iterator(y_test)
+    train_X, train_Y = data_iterator(X_train, y_train)
+    val_X, val_Y = data_iterator(X_val, y_val)
+    test_X, test_Y = data_iterator(X_test, y_test)
 
     return train_X, train_Y, val_X, val_Y, test_X, test_Y
 
